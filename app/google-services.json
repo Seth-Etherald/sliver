@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "265727220874",
+    "project_id": "sliver-b6693",
+    "storage_bucket": "sliver-b6693.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:265727220874:android:c588919f74a3bd506ae173",
+        "android_client_info": {
+          "package_name": "com.sethetherald.sliver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "265727220874-47e79r8bkn4jl1veenrfk5j6d669dfu1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDirrvDCgx6VaB8ZYno1XdjPyLFZxfID7g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "265727220874-47e79r8bkn4jl1veenrfk5j6d669dfu1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
