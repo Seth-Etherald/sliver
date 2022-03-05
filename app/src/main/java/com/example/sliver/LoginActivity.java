@@ -11,11 +11,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 @SuppressWarnings("deprecation")
 public class LoginActivity extends AppCompatActivity {
-    private FirebaseUser currentUser;
+
     private FirebaseAuth myAuth;
     private Button loginButton;
     private Button registerScreenButton;
@@ -28,7 +27,6 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         myAuth = FirebaseAuth.getInstance();
-        currentUser = myAuth.getCurrentUser();
 
         initializeFields();
 
@@ -63,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
                                     sendUserToMainActivity();
                                     Toast.makeText(
                                                     LoginActivity.this,
-                                                    "Login successfully!",
+                                                    "Welcome!",
                                                     Toast.LENGTH_SHORT)
                                             .show();
                                 } else {
@@ -89,18 +87,11 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        if (currentUser != null) {
-            sendUserToMainActivity();
-        }
-    }
-
     private void sendUserToMainActivity() {
         Intent mainIntent = new Intent(LoginActivity.this, MainActivity.class);
+        mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(mainIntent);
+        finish();
     }
 
     private void sendUserToRegisterActivity() {

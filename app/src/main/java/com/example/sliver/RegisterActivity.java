@@ -11,10 +11,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 @SuppressWarnings("deprecation")
 public class RegisterActivity extends AppCompatActivity {
     private FirebaseAuth myAuth;
+    private DatabaseReference rootRef;
     private TextInputLayout registerEmail, confirmEmail, registerPassword, confirmPassword;
     private Button registerButton, loginScreenButton;
     private ProgressDialog progressDialog;
@@ -25,6 +28,10 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         myAuth = FirebaseAuth.getInstance();
+        rootRef =
+                FirebaseDatabase.getInstance(
+                                "https://sliver-b6693-default-rtdb.asia-southeast1.firebasedatabase.app/")
+                        .getReference();
 
         initializeFields();
 
@@ -55,15 +62,17 @@ public class RegisterActivity extends AppCompatActivity {
         } else if (!password.equals(reinputPassword)) {
             Toast.makeText(this, "Please re-enter your password!", Toast.LENGTH_SHORT).show();
         } else {
-            progressDialog.setTitle("Creating new account");
+            progressDialog.setMessage("Creating new account");
             progressDialog.setCanceledOnTouchOutside(true);
             progressDialog.show();
+
             myAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(
                             task -> {
                                 if (task.isSuccessful()) {
-                                    myAuth.signOut();
-                                    sendUserToLoginActivity();
+                                    String currentUID = myAuth.getCurrentUser().getUid();
+                                    rootRef.child("users").child(currentUID).setValue("");
+                                    sendUserToMainActivity();
                                     Toast.makeText(
                                                     RegisterActivity.this,
                                                     "Account created successfully!",
@@ -95,5 +104,12 @@ public class RegisterActivity extends AppCompatActivity {
         registerButton = findViewById(R.id.register_button);
         loginScreenButton = findViewById(R.id.have_account_button);
         progressDialog = new ProgressDialog(this);
+    }
+
+    private void sendUserToMainActivity() {
+        Intent mainIntent = new Intent(RegisterActivity.this, MainActivity.class);
+        mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(mainIntent);
+        finish();
     }
 }
