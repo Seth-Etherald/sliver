@@ -2,30 +2,30 @@ package com.example.sliver;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.firebase.ui.database.FirebaseListAdapter;
+import com.firebase.ui.database.FirebaseListOptions;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 
 public class GroupChatActivity extends AppCompatActivity {
@@ -33,8 +33,6 @@ public class GroupChatActivity extends AppCompatActivity {
     private ImageButton sendMessageButton;
     private TextInputLayout userMessageInput;
     private ListView myListView;
-    private ScrollView myScrollView;
-    private TextView displayTextMessages;
 
     private String currentGroupName, currentUserID, currentUserName, currentTime;
 
@@ -70,42 +68,14 @@ public class GroupChatActivity extends AppCompatActivity {
                 view -> {
                     saveMessageToDatabase();
                     userMessageInput.getEditText().setText("");
-                    myScrollView.fullScroll(ScrollView.FOCUS_DOWN);
                 });
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        groupNameRef.addChildEventListener(
-                new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(
-                            @NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                        if (snapshot.exists()) {
-                            displayMessages(snapshot);
-                        }
-                    }
 
-                    @Override
-                    public void onChildChanged(
-                            @NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                        if (snapshot.exists()) {
-                            displayMessages(snapshot);
-                        }
-                    }
-
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot snapshot) {}
-
-                    @Override
-                    public void onChildMoved(
-                            @NonNull DataSnapshot snapshot, @Nullable String previousChildName) {}
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {}
-                });
-        myScrollView.fullScroll(ScrollView.FOCUS_DOWN);
+        displayMessageWithFirebaseUI();
     }
 
     private void initializeFields() {
@@ -114,8 +84,7 @@ public class GroupChatActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(currentGroupName);
         sendMessageButton = findViewById(R.id.send_message_button);
         userMessageInput = findViewById(R.id.input_group_message);
-        myScrollView = findViewById(R.id.my_scroll_view);
-        displayTextMessages = findViewById(R.id.group_chat_text_display);
+        myListView = findViewById(R.id.list_of_messages);
     }
 
     private void getUserInfo() {
@@ -134,17 +103,30 @@ public class GroupChatActivity extends AppCompatActivity {
                         });
     }
 
-    private void displayMessages(DataSnapshot snapshot) {
-        Iterator<DataSnapshot> iterator = snapshot.getChildren().iterator();
+    private void displayMessageWithFirebaseUI() {
+        Query query = groupNameRef;
+        FirebaseListOptions<ChatModel> options =
+                new FirebaseListOptions.Builder<ChatModel>()
+                        .setQuery(query, ChatModel.class)
+                        .setLayout(R.layout.chat_group_model)
+                        .setLifecycleOwner(this)
+                        .build();
 
-        while (iterator.hasNext()) {
-            String chatMessage = (String) ((DataSnapshot) iterator.next()).getValue();
-            String chatName = (String) ((DataSnapshot) iterator.next()).getValue();
-            String chatTime = (String) ((DataSnapshot) iterator.next()).getValue();
+        FirebaseListAdapter<ChatModel> adapter =
+                new FirebaseListAdapter<>(options) {
+                    @Override
+                    protected void populateView(
+                            @NonNull View v, @NonNull ChatModel model, int position) {
+                        TextView messageContent = v.findViewById(R.id.message_text);
+                        TextView messageName = v.findViewById(R.id.message_user);
+                        TextView messageTime = v.findViewById(R.id.message_time);
 
-            displayTextMessages.append(chatName + ":\n" + chatMessage + "\n" + chatTime + "\n\n\n");
-            myScrollView.fullScroll(ScrollView.FOCUS_DOWN);
-        }
+                        messageContent.setText(model.getMessage());
+                        messageName.setText(model.getName());
+                        messageTime.setText(model.getTime());
+                    }
+                };
+        myListView.setAdapter(adapter);
     }
 
     private void saveMessageToDatabase() {
@@ -156,7 +138,7 @@ public class GroupChatActivity extends AppCompatActivity {
         } else {
             Calendar messageTime = Calendar.getInstance();
             SimpleDateFormat currentTimeFormat =
-                    new SimpleDateFormat("hh:mm a \t\t MMM dd, yyyy", Locale.UK);
+                    new SimpleDateFormat("MMM dd, yyyy (hh:mm a)", Locale.UK);
             currentTime = currentTimeFormat.format(messageTime.getTime());
 
             HashMap<String, Object> groupMessageKey = new HashMap<>();
