@@ -6,6 +6,10 @@
     <string name="email_blank">Please enter an Email</string>
     <string name="confirm_password">Re-enter your Password</string>
     <string name="password_input">Password</string>
+    <string name="phone_input">Please enter your phone number</string>
+    <string name="verification_code">Please enter the verification code</string>
+    <string name="verification_button">Send verification code</string>
+    <string name="verify_button">Verify</string>
     <string name="login_button">Login</string>
     <string name="register_button">Register</string>
     <string name="forgot_button">Forgot password?</string>

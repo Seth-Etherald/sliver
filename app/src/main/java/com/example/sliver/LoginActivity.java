@@ -16,8 +16,7 @@ import com.google.firebase.auth.FirebaseAuth;
 public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth myAuth;
-    private Button loginButton;
-    private Button registerScreenButton;
+    private Button loginButton, registerScreenButton, phoneLoginButton, forgotPasswordButton;
     private TextInputLayout userEmail, userPassword;
     private ProgressDialog progressDialog;
 
@@ -32,6 +31,7 @@ public class LoginActivity extends AppCompatActivity {
 
         registerScreenButton.setOnClickListener(view -> sendUserToRegisterActivity());
         loginButton.setOnClickListener(view -> login());
+        phoneLoginButton.setOnClickListener(view -> sendUserToPhoneLoginActivity());
     }
 
     private void login() {
@@ -79,9 +79,9 @@ public class LoginActivity extends AppCompatActivity {
 
     private void initializeFields() {
         loginButton = findViewById(R.id.login_button);
-        Button forgotPasswordButton = findViewById(R.id.forgot_password);
+        forgotPasswordButton = findViewById(R.id.forgot_password);
         registerScreenButton = findViewById(R.id.register_screen_button);
-        Button phoneLoginButton = findViewById(R.id.phone_login_button);
+        phoneLoginButton = findViewById(R.id.phone_login_button);
         userEmail = findViewById(R.id.login_email);
         userPassword = findViewById(R.id.login_password);
         progressDialog = new ProgressDialog(this);
@@ -97,5 +97,10 @@ public class LoginActivity extends AppCompatActivity {
     private void sendUserToRegisterActivity() {
         Intent registerIntent = new Intent(LoginActivity.this, RegisterActivity.class);
         startActivity(registerIntent);
+    }
+
+    private void sendUserToPhoneLoginActivity() {
+        Intent phoneLoginIntent = new Intent(LoginActivity.this, PhoneLoginActivity.class);
+        startActivity(phoneLoginIntent);
     }
 }
