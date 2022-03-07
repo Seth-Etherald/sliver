@@ -15,7 +15,10 @@
     <string name="login_phone">Login with phone number</string>
     <string name="menu_findFriends">Find friends</string>
     <string name="menu_settings">Settings</string>
+    <string name="create_group">Create Group Chat</string>
     <string name="set_username">Set Username</string>
     <string name="set_status">Set Status</string>
+    <string name="chat_hint">Type a messages…</string>
     <string name="menu_logout">Logout</string>
+    <string name="send_button">Send Message</string>
 </resources>
