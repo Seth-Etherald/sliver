@@ -26,7 +26,7 @@ public class ProfileActivity extends AppCompatActivity {
     private CircleImageView userProfileImage;
     private TextView userProfileName, userProfileStatus;
     private Button sendMessageRequestButton, declineMessageRequestButton;
-    private DatabaseReference userRef, chatRequestRef;
+    private DatabaseReference userRef, chatRequestRef, contactsRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +43,11 @@ public class ProfileActivity extends AppCompatActivity {
                                 "https://sliver-b6693-default-rtdb.asia-southeast1.firebasedatabase.app/")
                         .getReference()
                         .child("chat_requests");
+        contactsRef =
+                FirebaseDatabase.getInstance(
+                                "https://sliver-b6693-default-rtdb.asia-southeast1.firebasedatabase.app/")
+                        .getReference()
+                        .child("contacts");
         FirebaseAuth myAuth = FirebaseAuth.getInstance();
         currentUserID = myAuth.getCurrentUser().getUid();
         receiverUserId = getIntent().getExtras().get("visit_user_id").toString();
@@ -55,7 +60,6 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         retrieveUserInfo();
-
         sendMessageRequestButton.setOnClickListener(
                 view -> {
                     sendMessageRequestButton.setEnabled(false);
@@ -64,6 +68,12 @@ public class ProfileActivity extends AppCompatActivity {
                     }
                     if (REQUEST_STATE_FLAG.equals("request_sent")) {
                         cancelChatRequest();
+                    }
+                    if (REQUEST_STATE_FLAG.equals("request_received")) {
+                        acceptChatRequest();
+                    }
+                    if (REQUEST_STATE_FLAG.equals("friends")) {
+                        removeSpecificContact();
                     }
                 });
     }
@@ -176,6 +186,89 @@ public class ProfileActivity extends AppCompatActivity {
                         });
     }
 
+    private void acceptChatRequest() {
+        contactsRef
+                .child(currentUserID)
+                .child(receiverUserId)
+                .child("contacts")
+                .setValue("saved")
+                .addOnCompleteListener(
+                        task -> {
+                            if (task.isSuccessful()) {
+                                contactsRef
+                                        .child(receiverUserId)
+                                        .child(currentUserID)
+                                        .child("contacts")
+                                        .setValue("saved")
+                                        .addOnCompleteListener(
+                                                task13 -> {
+                                                    if (task13.isSuccessful()) {
+                                                        chatRequestRef
+                                                                .child(currentUserID)
+                                                                .child(receiverUserId)
+                                                                .removeValue()
+                                                                .addOnCompleteListener(
+                                                                        task12 -> {
+                                                                            if (task12
+                                                                                    .isSuccessful()) {
+                                                                                chatRequestRef
+                                                                                        .child(
+                                                                                                receiverUserId)
+                                                                                        .child(
+                                                                                                currentUserID)
+                                                                                        .removeValue()
+                                                                                        .addOnCompleteListener(
+                                                                                                task1 -> {
+                                                                                                    sendMessageRequestButton
+                                                                                                            .setEnabled(
+                                                                                                                    true);
+                                                                                                    REQUEST_STATE_FLAG =
+                                                                                                            "friends";
+                                                                                                    sendMessageRequestButton
+                                                                                                            .setText(
+                                                                                                                    R
+                                                                                                                            .string
+                                                                                                                            .remove_contact);
+                                                                                                    declineMessageRequestButton
+                                                                                                            .setVisibility(
+                                                                                                                    View
+                                                                                                                            .GONE);
+                                                                                                });
+                                                                            }
+                                                                        });
+                                                    }
+                                                });
+                            }
+                        });
+    }
+
+    private void removeSpecificContact() {
+        contactsRef
+                .child(currentUserID)
+                .child(receiverUserId)
+                .removeValue()
+                .addOnCompleteListener(
+                        task -> {
+                            if (task.isSuccessful()) {
+                                contactsRef
+                                        .child(receiverUserId)
+                                        .child(currentUserID)
+                                        .removeValue()
+                                        .addOnCompleteListener(
+                                                task1 -> {
+                                                    if (task1.isSuccessful()) {
+                                                        sendMessageRequestButton.setEnabled(true);
+                                                        REQUEST_STATE_FLAG = "new";
+                                                        sendMessageRequestButton.setText(
+                                                                R.string.send_message_request);
+                                                        declineMessageRequestButton.setVisibility(
+                                                                View.GONE);
+                                                    }
+                                                });
+                            }
+                        });
+    }
+
     private void manageChatRequestStatus() {
         chatRequestRef
                 .child(currentUserID)
@@ -201,7 +294,29 @@ public class ProfileActivity extends AppCompatActivity {
                                         declineMessageRequestButton.setEnabled(true);
                                         declineMessageRequestButton.setOnClickListener(
                                                 view -> cancelChatRequest());
+                                    } else {
+                                        REQUEST_STATE_FLAG = "friends";
+                                        sendMessageRequestButton.setText(R.string.remove_contact);
                                     }
+                                } else {
+                                    contactsRef
+                                            .child(currentUserID)
+                                            .addListenerForSingleValueEvent(
+                                                    new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(
+                                                                @NonNull DataSnapshot snapshot) {
+                                                            if (snapshot.hasChild(receiverUserId)) {
+                                                                REQUEST_STATE_FLAG = "friends";
+                                                                sendMessageRequestButton.setText(
+                                                                        R.string.remove_contact);
+                                                            }
+                                                        }
+
+                                                        @Override
+                                                        public void onCancelled(
+                                                                @NonNull DatabaseError error) {}
+                                                    });
                                 }
                             }
 
