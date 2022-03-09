@@ -23,7 +23,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-@SuppressWarnings("deprecation")
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseUser currentUser;
@@ -44,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar myToolbar = findViewById(R.id.main_page_toolbar);
         setSupportActionBar(myToolbar);
-        getSupportActionBar().setTitle("Sliver Demo");
+        getSupportActionBar().setTitle(R.string.app_title);
 
         ViewPager myViewPager = findViewById(R.id.main_tabs_pager);
         TabAccessorAdapter myTabAccessorAdapter =
@@ -101,6 +100,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(settingIntent);
     }
 
+    private void sendUserToFindFriendsActivity() {
+        Intent findFriendsIntent = new Intent(MainActivity.this, FindFriendsActivity.class);
+        startActivity(findFriendsIntent);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -111,7 +115,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         super.onOptionsItemSelected(item);
-        if (item.getItemId() == R.id.main_find_friends_option) {}
+        if (item.getItemId() == R.id.main_find_friends_option) {
+            sendUserToFindFriendsActivity();
+        }
 
         if (item.getItemId() == R.id.main_create_group_option) {
             requestNewGroup();

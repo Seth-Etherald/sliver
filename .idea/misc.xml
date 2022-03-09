@@ -3,11 +3,16 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/drawable/border.xml" value="0.2335" />
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/drawable/button.xml" value="0.2" />
+        <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/drawable/circle_shape.xml" value="0.2335" />
+        <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout-v29/activity_login.xml" value="0.371875" />
+        <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout/activity_find_friends.xml" value="0.371875" />
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout/activity_group_chat.xml" value="0.33" />
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout/activity_login.xml" value="0.33" />
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout/activity_main.xml" value="0.19166666666666668" />
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout/activity_phone_login.xml" value="0.33" />
+        <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout/activity_profile.xml" value="0.33" />
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout/activity_register.xml" value="0.33" />
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout/activity_settings.xml" value="0.33" />
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout/app_bar_layout.xml" value="0.19166666666666668" />
@@ -16,6 +21,7 @@
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout/fragment_chats.xml" value="0.1921875" />
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout/fragment_contacts.xml" value="0.1921875" />
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout/fragment_groups.xml" value="0.1921875" />
+        <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout/user_display_layout.xml" value="0.33" />
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/menu/options_menu.xml" value="0.33" />
         <entry key="..\:/Programs/Android/sdk/platforms/android-32/data/res/layout/simple_list_item_1.xml" value="0.371875" />
       </map>

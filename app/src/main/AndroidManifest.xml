@@ -14,6 +14,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Sliver">
         <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FindFriendsActivity"
+            android:exported="false" />
+        <activity
             android:name=".PhoneLoginActivity"
             android:exported="false" />
         <activity
