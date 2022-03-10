@@ -34,7 +34,7 @@ import java.util.HashMap;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 @SuppressWarnings("deprecation")
-public class SettingsActivity extends AppCompatActivity {
+public class ProfileSettingsActivity extends AppCompatActivity {
 
   private static final int galleryPick = 1;
   private Button updateAccountSettings;
@@ -50,7 +50,7 @@ public class SettingsActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_settings);
+    setContentView(R.layout.activity_profile_settings);
 
     myAuth = FirebaseAuth.getInstance();
     currentUserID = myAuth.getCurrentUser().getUid();
@@ -124,14 +124,14 @@ public class SettingsActivity extends AppCompatActivity {
                                   .setValue(downloadUrl);
                               userProfileImage.setImageURI(uri);
                               Toast.makeText(
-                                      SettingsActivity.this,
+                                      ProfileSettingsActivity.this,
                                       "User profile image updated successfully!",
                                       Toast.LENGTH_SHORT)
                                   .show();
                             });
                   } else {
                     String errorMessage = task.getException().getMessage();
-                    Toast.makeText(SettingsActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ProfileSettingsActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
                   }
                 });
       }
@@ -163,14 +163,14 @@ public class SettingsActivity extends AppCompatActivity {
               task -> {
                 if (task.isSuccessful()) {
                   Toast.makeText(
-                          SettingsActivity.this,
+                          ProfileSettingsActivity.this,
                           "Profile updated successfully!",
                           Toast.LENGTH_SHORT)
                       .show();
                   sendUserToMainActivity();
                 } else {
                   String errorMessage = task.getException().getMessage();
-                  Toast.makeText(SettingsActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                  Toast.makeText(ProfileSettingsActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
                 }
                 progressDialog.dismiss();
               });
@@ -195,7 +195,7 @@ public class SettingsActivity extends AppCompatActivity {
 
                   usernameInput.getEditText().setText(retrieveUsername);
                   userStatusInput.getEditText().setText(retrieveStatus);
-                  Glide.with(SettingsActivity.this)
+                  Glide.with(ProfileSettingsActivity.this)
                       .load(retrieveProfileImage)
                       .dontAnimate()
                       .into(userProfileImage);
@@ -208,7 +208,7 @@ public class SettingsActivity extends AppCompatActivity {
                   userStatusInput.getEditText().setText(retrieveStatus);
                 } else {
                   Toast.makeText(
-                          SettingsActivity.this,
+                          ProfileSettingsActivity.this,
                           "You need an username to continue!",
                           Toast.LENGTH_SHORT)
                       .show();
@@ -221,7 +221,7 @@ public class SettingsActivity extends AppCompatActivity {
   }
 
   private void sendUserToMainActivity() {
-    Intent mainIntent = new Intent(SettingsActivity.this, MainActivity.class);
+    Intent mainIntent = new Intent(ProfileSettingsActivity.this, MainActivity.class);
     mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
     startActivity(mainIntent);
     finish();

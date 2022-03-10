@@ -4,6 +4,7 @@ public class ChatModel {
   private String name;
   private String message;
   private String time;
+  private String uid;
 
   public ChatModel() {}
 
@@ -29,5 +30,9 @@ public class ChatModel {
 
   public void setTime(String time) {
     this.time = time;
+  }
+
+  public String getUid() {
+    return uid;
   }
 }

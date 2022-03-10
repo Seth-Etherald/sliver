@@ -109,7 +109,7 @@ public class GroupChatActivity extends AppCompatActivity {
     FirebaseListOptions<ChatModel> options =
         new FirebaseListOptions.Builder<ChatModel>()
             .setQuery(query, ChatModel.class)
-            .setLayout(R.layout.chat_group_model)
+            .setLayout(R.layout.chat_model_1)
             .setLifecycleOwner(this)
             .build();
 
@@ -150,6 +150,7 @@ public class GroupChatActivity extends AppCompatActivity {
       messageInfoMap.put("name", currentUserName);
       messageInfoMap.put("message", message);
       messageInfoMap.put("time", currentTime);
+      messageInfoMap.put("uid", currentUserID);
       groupMessageKeyRef.updateChildren(messageInfoMap);
     }
   }

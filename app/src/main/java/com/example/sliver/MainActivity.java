@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void sendUserToSettingActivity() {
-    Intent settingIntent = new Intent(MainActivity.this, SettingsActivity.class);
+    Intent settingIntent = new Intent(MainActivity.this, ProfileSettingsActivity.class);
     startActivity(settingIntent);
   }
 
@@ -171,7 +171,7 @@ public class MainActivity extends AppCompatActivity {
               if (task.isSuccessful()) {
                 Toast.makeText(
                         MainActivity.this,
-                        groupName + " is created successfully!",
+                        groupName + " group is created successfully!",
                         Toast.LENGTH_SHORT)
                     .show();
               } else {
