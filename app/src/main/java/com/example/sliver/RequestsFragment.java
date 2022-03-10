@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -142,6 +143,11 @@ public class RequestsFragment extends Fragment {
                                                             .child(list_user_id)
                                                             .removeValue();
                                                       }
+                                                      Toast.makeText(
+                                                              getContext(),
+                                                              "New contact added!",
+                                                              Toast.LENGTH_SHORT)
+                                                          .show();
                                                     });
                                           }
                                         }));
@@ -158,6 +164,11 @@ public class RequestsFragment extends Fragment {
                                                 .child(list_user_id)
                                                 .child(currentUserId)
                                                 .removeValue();
+                                            Toast.makeText(
+                                                    getContext(),
+                                                    "Friend request decline!",
+                                                    Toast.LENGTH_SHORT)
+                                                .show();
                                           }
                                         }));
                       } else {
@@ -204,6 +215,11 @@ public class RequestsFragment extends Fragment {
                                                 .child(list_user_id)
                                                 .child(currentUserId)
                                                 .removeValue();
+                                            Toast.makeText(
+                                                    getContext(),
+                                                    "Friend request cancelled",
+                                                    Toast.LENGTH_SHORT)
+                                                .show();
                                           }
                                         }));
                       }
