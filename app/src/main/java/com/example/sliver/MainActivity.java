@@ -25,161 +25,159 @@ import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
 
-    private FirebaseUser currentUser;
-    private FirebaseAuth myAuth;
-    private DatabaseReference rootRef;
+  private FirebaseUser currentUser;
+  private FirebaseAuth myAuth;
+  private DatabaseReference rootRef;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
 
-        myAuth = FirebaseAuth.getInstance();
-        currentUser = myAuth.getCurrentUser();
-        rootRef =
-                FirebaseDatabase.getInstance(
-                                "https://sliver-b6693-default-rtdb.asia-southeast1.firebasedatabase.app/")
-                        .getReference();
+    myAuth = FirebaseAuth.getInstance();
+    currentUser = myAuth.getCurrentUser();
+    rootRef =
+        FirebaseDatabase.getInstance(
+                "https://sliver-b6693-default-rtdb.asia-southeast1.firebasedatabase.app/")
+            .getReference();
 
-        Toolbar myToolbar = findViewById(R.id.main_page_toolbar);
-        setSupportActionBar(myToolbar);
-        getSupportActionBar().setTitle(R.string.app_title);
+    Toolbar myToolbar = findViewById(R.id.main_page_toolbar);
+    setSupportActionBar(myToolbar);
+    getSupportActionBar().setTitle(R.string.app_title);
 
-        ViewPager myViewPager = findViewById(R.id.main_tabs_pager);
-        TabAccessorAdapter myTabAccessorAdapter =
-                new TabAccessorAdapter(getSupportFragmentManager());
-        myViewPager.setAdapter(myTabAccessorAdapter);
+    ViewPager myViewPager = findViewById(R.id.main_tabs_pager);
+    TabAccessorAdapter myTabAccessorAdapter = new TabAccessorAdapter(getSupportFragmentManager());
+    myViewPager.setAdapter(myTabAccessorAdapter);
 
-        TabLayout myTabLayout = findViewById(R.id.main_tabs);
-        myTabLayout.setupWithViewPager(myViewPager);
+    TabLayout myTabLayout = findViewById(R.id.main_tabs);
+    myTabLayout.setupWithViewPager(myViewPager);
+  }
+
+  @Override
+  protected void onStart() {
+    super.onStart();
+
+    if (currentUser == null) {
+      sendUserToLoginActivity();
+    } else {
+      VerifyUserExistence();
+    }
+  }
+
+  private void VerifyUserExistence() {
+    String currentUserID = myAuth.getCurrentUser().getUid();
+    rootRef
+        .child("users")
+        .child(currentUserID)
+        .addValueEventListener(
+            new ValueEventListener() {
+              @Override
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!(snapshot.child("name").exists())) {
+                  sendUserToSettingActivity();
+                  Toast.makeText(
+                          MainActivity.this,
+                          "You need an username to continue!",
+                          Toast.LENGTH_SHORT)
+                      .show();
+                }
+              }
+
+              @Override
+              public void onCancelled(@NonNull DatabaseError error) {}
+            });
+  }
+
+  private void sendUserToLoginActivity() {
+    Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
+    loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    startActivity(loginIntent);
+    finish();
+  }
+
+  private void sendUserToSettingActivity() {
+    Intent settingIntent = new Intent(MainActivity.this, SettingsActivity.class);
+    startActivity(settingIntent);
+  }
+
+  private void sendUserToFindFriendsActivity() {
+    Intent findFriendsIntent = new Intent(MainActivity.this, FindFriendsActivity.class);
+    startActivity(findFriendsIntent);
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    super.onCreateOptionsMenu(menu);
+    getMenuInflater().inflate(R.menu.options_menu, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    super.onOptionsItemSelected(item);
+    if (item.getItemId() == R.id.main_find_friends_option) {
+      sendUserToFindFriendsActivity();
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        if (currentUser == null) {
-            sendUserToLoginActivity();
-        } else {
-            VerifyUserExistence();
-        }
+    if (item.getItemId() == R.id.main_create_group_option) {
+      requestNewGroup();
     }
 
-    private void VerifyUserExistence() {
-        String currentUserID = myAuth.getCurrentUser().getUid();
-        rootRef.child("users")
-                .child(currentUserID)
-                .addValueEventListener(
-                        new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                if (!(snapshot.child("name").exists())) {
-                                    sendUserToSettingActivity();
-                                    Toast.makeText(
-                                                    MainActivity.this,
-                                                    "You need an username to continue!",
-                                                    Toast.LENGTH_SHORT)
-                                            .show();
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {}
-                        });
+    if (item.getItemId() == R.id.main_settings_option) {
+      sendUserToSettingActivity();
     }
 
-    private void sendUserToLoginActivity() {
-        Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
-        loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(loginIntent);
-        finish();
+    if (item.getItemId() == R.id.main_logout_option) {
+      myAuth.signOut();
+      sendUserToLoginActivity();
     }
+    return true;
+  }
 
-    private void sendUserToSettingActivity() {
-        Intent settingIntent = new Intent(MainActivity.this, SettingsActivity.class);
-        startActivity(settingIntent);
-    }
+  private void requestNewGroup() {
+    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+    builder.setTitle("Enter group name:");
 
-    private void sendUserToFindFriendsActivity() {
-        Intent findFriendsIntent = new Intent(MainActivity.this, FindFriendsActivity.class);
-        startActivity(findFriendsIntent);
-    }
+    final EditText groupNameInput = new EditText(MainActivity.this);
+    groupNameInput.setHint("e.g Family");
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.options_menu, menu);
-        return true;
-    }
+    builder.setView(groupNameInput);
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        super.onOptionsItemSelected(item);
-        if (item.getItemId() == R.id.main_find_friends_option) {
-            sendUserToFindFriendsActivity();
-        }
+    builder.setPositiveButton(
+        "Create",
+        (dialogInterface, i) -> {
+          String groupName = groupNameInput.getText().toString().trim();
+          if (TextUtils.isEmpty(groupName)) {
+            Toast.makeText(
+                    MainActivity.this, "Please enter a valid group name!", Toast.LENGTH_SHORT)
+                .show();
+          } else {
+            createNewGroup(groupName);
+          }
+        });
 
-        if (item.getItemId() == R.id.main_create_group_option) {
-            requestNewGroup();
-        }
+    builder.setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.cancel());
 
-        if (item.getItemId() == R.id.main_settings_option) {
-            sendUserToSettingActivity();
-        }
+    builder.show();
+  }
 
-        if (item.getItemId() == R.id.main_logout_option) {
-            myAuth.signOut();
-            sendUserToLoginActivity();
-        }
-        return true;
-    }
-
-    private void requestNewGroup() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Enter group name:");
-
-        final EditText groupNameInput = new EditText(MainActivity.this);
-        groupNameInput.setHint("e.g Family");
-
-        builder.setView(groupNameInput);
-
-        builder.setPositiveButton(
-                "Create",
-                (dialogInterface, i) -> {
-                    String groupName = groupNameInput.getText().toString().trim();
-                    if (TextUtils.isEmpty(groupName)) {
-                        Toast.makeText(
-                                        MainActivity.this,
-                                        "Please enter a valid group name!",
-                                        Toast.LENGTH_SHORT)
-                                .show();
-                    } else {
-                        createNewGroup(groupName);
-                    }
-                });
-
-        builder.setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.cancel());
-
-        builder.show();
-    }
-
-    private void createNewGroup(String groupName) {
-        rootRef.child("groups")
-                .child(groupName)
-                .setValue("")
-                .addOnCompleteListener(
-                        task -> {
-                            if (task.isSuccessful()) {
-                                Toast.makeText(
-                                                MainActivity.this,
-                                                groupName + " is created successfully!",
-                                                Toast.LENGTH_SHORT)
-                                        .show();
-                            } else {
-                                String errorMessage = task.getException().getMessage();
-                                Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_SHORT)
-                                        .show();
-                            }
-                        });
-    }
+  private void createNewGroup(String groupName) {
+    rootRef
+        .child("groups")
+        .child(groupName)
+        .setValue("")
+        .addOnCompleteListener(
+            task -> {
+              if (task.isSuccessful()) {
+                Toast.makeText(
+                        MainActivity.this,
+                        groupName + " is created successfully!",
+                        Toast.LENGTH_SHORT)
+                    .show();
+              } else {
+                String errorMessage = task.getException().getMessage();
+                Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+              }
+            });
+  }
 }

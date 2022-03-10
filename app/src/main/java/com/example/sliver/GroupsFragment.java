@@ -23,64 +23,64 @@ import java.util.Set;
 
 public class GroupsFragment extends Fragment {
 
-    private final ArrayList<String> listOfGroups = new ArrayList<>();
-    private View groupFragmentView;
-    private ArrayAdapter<String> arrayAdapter;
-    private DatabaseReference groupRef;
-    private ListView listView;
+  private final ArrayList<String> listOfGroups = new ArrayList<>();
+  private View groupFragmentView;
+  private ArrayAdapter<String> arrayAdapter;
+  private DatabaseReference groupRef;
+  private ListView listView;
 
-    public GroupsFragment() {}
+  public GroupsFragment() {}
 
-    @Override
-    public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+  @Override
+  public View onCreateView(
+      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        groupFragmentView = inflater.inflate(R.layout.fragment_groups, container, false);
+    groupFragmentView = inflater.inflate(R.layout.fragment_groups, container, false);
 
-        groupRef =
-                FirebaseDatabase.getInstance(
-                                "https://sliver-b6693-default-rtdb.asia-southeast1.firebasedatabase.app/")
-                        .getReference()
-                        .child("groups");
+    groupRef =
+        FirebaseDatabase.getInstance(
+                "https://sliver-b6693-default-rtdb.asia-southeast1.firebasedatabase.app/")
+            .getReference()
+            .child("groups");
 
-        initializeFields();
+    initializeFields();
 
-        retrieveAndDisplayGroups();
+    retrieveAndDisplayGroups();
 
-        listView.setOnItemClickListener(
-                (adapterView, view, position, id) -> {
-                    String currentGroupName = adapterView.getItemAtPosition(position).toString();
-                    Intent groupChatIntent = new Intent(getContext(), GroupChatActivity.class);
-                    groupChatIntent.putExtra("groupName", currentGroupName);
-                    startActivity(groupChatIntent);
-                });
+    listView.setOnItemClickListener(
+        (adapterView, view, position, id) -> {
+          String currentGroupName = adapterView.getItemAtPosition(position).toString();
+          Intent groupChatIntent = new Intent(getContext(), GroupChatActivity.class);
+          groupChatIntent.putExtra("groupName", currentGroupName);
+          startActivity(groupChatIntent);
+        });
 
-        return groupFragmentView;
-    }
+    return groupFragmentView;
+  }
 
-    private void initializeFields() {
-        listView = groupFragmentView.findViewById(R.id.list_view);
-        arrayAdapter =
-                new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, listOfGroups);
-        listView.setAdapter(arrayAdapter);
-    }
+  private void initializeFields() {
+    listView = groupFragmentView.findViewById(R.id.list_view);
+    arrayAdapter =
+        new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, listOfGroups);
+    listView.setAdapter(arrayAdapter);
+  }
 
-    private void retrieveAndDisplayGroups() {
-        groupRef.addValueEventListener(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        Set<String> set = new HashSet<>();
-                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                            set.add(dataSnapshot.getKey());
-                        }
-                        listOfGroups.clear();
-                        listOfGroups.addAll(set);
-                        arrayAdapter.notifyDataSetChanged();
-                    }
+  private void retrieveAndDisplayGroups() {
+    groupRef.addValueEventListener(
+        new ValueEventListener() {
+          @Override
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
+            Set<String> set = new HashSet<>();
+            for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+              set.add(dataSnapshot.getKey());
+            }
+            listOfGroups.clear();
+            listOfGroups.addAll(set);
+            arrayAdapter.notifyDataSetChanged();
+          }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {}
-                });
-    }
+          @Override
+          public void onCancelled(@NonNull DatabaseError error) {}
+        });
+  }
 }

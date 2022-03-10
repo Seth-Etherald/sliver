@@ -25,14 +25,19 @@
     <string name="chat_hint">Type a messages…</string>
     <string name="menu_logout">Logout</string>
     <string name="send_button">Send Message</string>
-    <string name="send_message_request">Send message</string>
-    <string name="cancel_message_request">Cancel message request</string>
+    <string name="send_message_request">Send Friend Request</string>
+    <string name="cancel_message_request">Cancel Friend request</string>
     <string name="find_friends_title">Find Friends</string>
     <string name="app_title">Sliver</string>
     <string name="default_username">Default username</string>
     <string name="default_user_status">Default user status</string>
     <string name="user_online_indicator">User online indicator</string>
-    <string name="decline_message_request">Decline message request</string>
-    <string name="accept_message_request">Accept message request</string>
+    <string name="decline_message_request">Decline Friend Request</string>
+    <string name="accept_message_request">Accept Friend Request</string>
     <string name="remove_contact">Remove this contact</string>
+    <string name="accept">Accept</string>
+    <string name="decline">Decline</string>
+    <string name="request_sent">Request sent</string>
+    <string name="request_user_status">%1$s sent you a friend request!</string>
+    <string name="request_user_send_status">You sent a friend request to %1$s!</string>
 </resources>
