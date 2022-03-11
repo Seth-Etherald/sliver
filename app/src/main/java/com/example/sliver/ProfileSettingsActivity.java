@@ -131,7 +131,8 @@ public class ProfileSettingsActivity extends AppCompatActivity {
                             });
                   } else {
                     String errorMessage = task.getException().getMessage();
-                    Toast.makeText(ProfileSettingsActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ProfileSettingsActivity.this, errorMessage, Toast.LENGTH_SHORT)
+                        .show();
                   }
                 });
       }
@@ -170,7 +171,8 @@ public class ProfileSettingsActivity extends AppCompatActivity {
                   sendUserToMainActivity();
                 } else {
                   String errorMessage = task.getException().getMessage();
-                  Toast.makeText(ProfileSettingsActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                  Toast.makeText(ProfileSettingsActivity.this, errorMessage, Toast.LENGTH_SHORT)
+                      .show();
                 }
                 progressDialog.dismiss();
               });

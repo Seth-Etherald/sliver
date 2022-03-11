@@ -9,18 +9,25 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class PrivateMessageAdapter
-    extends RecyclerView.Adapter<PrivateMessageAdapter.MessageViewHolder> {
+public class GroupMessageAdapter
+    extends RecyclerView.Adapter<GroupMessageAdapter.MessageViewHolder> {
   private List<ChatModel> messagesList;
   private FirebaseAuth myAuth;
+  private CircleImageView profileImage;
 
-  public PrivateMessageAdapter(List<ChatModel> messagesList) {
+  public GroupMessageAdapter(List<ChatModel> messagesList) {
     this.messagesList = messagesList;
   }
 
@@ -41,15 +48,45 @@ public class PrivateMessageAdapter
 
     String fromUserId = messages.getUid();
     String fromMessageType = messages.getType();
-    holder.profileImage.setVisibility(View.GONE);
+
+    DatabaseReference usersRef =
+        FirebaseDatabase.getInstance(
+                "https://sliver-b6693-default-rtdb.asia-southeast1.firebasedatabase.app/")
+            .getReference()
+            .child("users")
+            .child(fromUserId);
+    usersRef.addValueEventListener(
+        new ValueEventListener() {
+          @Override
+          public void onDataChange(@NonNull DataSnapshot snapshot) {
+            if (snapshot.hasChild("image")) {
+              String profileImageLink = snapshot.child("image").getValue().toString();
+              Glide.with(profileImage.getContext())
+                  .load(profileImageLink)
+                  .placeholder(R.drawable.default_avatar)
+                  .dontAnimate()
+                  .into(profileImage);
+            }
+          }
+
+          @Override
+          public void onCancelled(@NonNull DatabaseError error) {}
+        });
     if (fromMessageType.equals("text")) {
       if (fromUserId.equals(messageSenderId)) {
+        profileImage.setVisibility(View.GONE);
         holder.notCurrentUserSide.setVisibility(View.GONE);
         holder.senderMessageText.setText(messages.getMessage());
       } else {
+        holder.receiverUsername.setText(messages.getName());
         holder.currentUserSide.setVisibility(View.GONE);
         holder.receiverMessageText.setText(messages.getMessage());
         holder.messageTime.setText(messages.getTime());
+        Glide.with(profileImage.getContext())
+            .load(messages.getImage())
+            .placeholder(R.drawable.default_avatar)
+            .dontAnimate()
+            .into(profileImage);
       }
     }
   }
@@ -59,9 +96,8 @@ public class PrivateMessageAdapter
     return messagesList.size();
   }
 
-  public static class MessageViewHolder extends RecyclerView.ViewHolder {
+  public class MessageViewHolder extends RecyclerView.ViewHolder {
     public TextView senderMessageText, receiverMessageText, receiverUsername, messageTime;
-    public CircleImageView profileImage;
     LinearLayout notCurrentUserSide, currentUserSide;
 
     public MessageViewHolder(@NonNull View itemView) {
