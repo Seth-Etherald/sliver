@@ -4,14 +4,15 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.bumptech.glide.Glide;
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.firebase.ui.database.FirebaseListOptions;
 import com.google.android.material.textfield.TextInputLayout;
@@ -28,15 +29,14 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class GroupChatActivity extends AppCompatActivity {
-  private Toolbar myToolbar;
   private ImageButton sendMessageButton;
   private TextInputLayout userMessageInput;
   private ListView myListView;
 
-  private String currentGroupName, currentUserID, currentUserName, currentTime;
-
-  private FirebaseAuth myAuth;
+  private String currentGroupName, currentUserID, currentUserName, messageSenderProfilePicture;
   private DatabaseReference usersRef, groupNameRef, groupMessageKeyRef;
 
   @Override
@@ -46,7 +46,7 @@ public class GroupChatActivity extends AppCompatActivity {
 
     currentGroupName = getIntent().getExtras().get("groupName").toString();
 
-    myAuth = FirebaseAuth.getInstance();
+    FirebaseAuth myAuth = FirebaseAuth.getInstance();
     currentUserID = myAuth.getCurrentUser().getUid();
     usersRef =
         FirebaseDatabase.getInstance(
@@ -79,7 +79,7 @@ public class GroupChatActivity extends AppCompatActivity {
   }
 
   private void initializeFields() {
-    myToolbar = findViewById(R.id.group_chat_bar_layout);
+    Toolbar myToolbar = findViewById(R.id.group_chat_bar_layout);
     setSupportActionBar(myToolbar);
     getSupportActionBar().setTitle(currentGroupName);
     sendMessageButton = findViewById(R.id.send_message_button);
@@ -96,6 +96,9 @@ public class GroupChatActivity extends AppCompatActivity {
               public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                   currentUserName = snapshot.child("name").getValue().toString();
+                  if (snapshot.hasChild("image")) {
+                    messageSenderProfilePicture = snapshot.child("image").getValue().toString();
+                  }
                 }
               }
 
@@ -117,13 +120,33 @@ public class GroupChatActivity extends AppCompatActivity {
         new FirebaseListAdapter<>(options) {
           @Override
           protected void populateView(@NonNull View v, @NonNull ChatModel model, int position) {
+            CircleImageView profileImage = v.findViewById(R.id.group_chat_profile_image);
+            LinearLayout messageSenderSide = v.findViewById(R.id.sender_message_side);
             TextView messageContent = v.findViewById(R.id.message_text);
             TextView messageName = v.findViewById(R.id.message_user);
             TextView messageTime = v.findViewById(R.id.message_time);
+            TextView messageSenderContent = v.findViewById(R.id.sender_message_content);
 
             messageContent.setText(model.getMessage());
             messageName.setText(model.getName());
             messageTime.setText(model.getTime());
+            if (!model.getUid().equals(currentUserID)) {
+              Glide.with(GroupChatActivity.this)
+                  .load(model.getImage())
+                  .placeholder(R.drawable.default_avatar)
+                  .dontAnimate()
+                  .into(profileImage);
+              messageSenderContent.setVisibility(View.GONE);
+              messageSenderSide.setVisibility(View.GONE);
+              messageContent.setText(model.getMessage());
+              messageName.setText(model.getName());
+              messageTime.setText(model.getTime());
+            } else {
+              profileImage.setVisibility(View.GONE);
+              LinearLayout notCurrentUserSide = v.findViewById(R.id.chat_not_current_user_side);
+              notCurrentUserSide.setVisibility(View.GONE);
+              messageSenderContent.setText(model.getMessage());
+            }
           }
         };
     myListView.setAdapter(adapter);
@@ -133,13 +156,11 @@ public class GroupChatActivity extends AppCompatActivity {
     String message = userMessageInput.getEditText().getText().toString();
     String messageKey = groupNameRef.push().getKey();
 
-    if (TextUtils.isEmpty(message)) {
-      Toast.makeText(this, "Message content is empty", Toast.LENGTH_SHORT).show();
-    } else {
+    if (!TextUtils.isEmpty(message)) {
       Calendar messageTime = Calendar.getInstance();
       SimpleDateFormat currentTimeFormat =
           new SimpleDateFormat("MMM dd, yyyy (hh:mm a)", Locale.UK);
-      currentTime = currentTimeFormat.format(messageTime.getTime());
+      String currentTime = currentTimeFormat.format(messageTime.getTime());
 
       HashMap<String, Object> groupMessageKey = new HashMap<>();
       groupNameRef.updateChildren(groupMessageKey);
@@ -151,6 +172,8 @@ public class GroupChatActivity extends AppCompatActivity {
       messageInfoMap.put("message", message);
       messageInfoMap.put("time", currentTime);
       messageInfoMap.put("uid", currentUserID);
+      messageInfoMap.put("image", messageSenderProfilePicture);
+      messageInfoMap.put("type", "text");
       groupMessageKeyRef.updateChildren(messageInfoMap);
     }
   }

@@ -94,6 +94,8 @@ public class ChatsFragment extends Fragment {
                                 .placeholder(R.drawable.default_avatar)
                                 .dontAnimate()
                                 .into(holder.profileImage);
+                          } else {
+                            profileImage = "";
                           }
                           String username = snapshot.child("name").getValue().toString();
                           String userStatus = snapshot.child("status").getValue().toString();

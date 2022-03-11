@@ -5,6 +5,8 @@ public class ChatModel {
   private String message;
   private String time;
   private String uid;
+  private String image;
+  private String type;
 
   public ChatModel() {}
 
@@ -34,5 +36,25 @@ public class ChatModel {
 
   public String getUid() {
     return uid;
+  }
+
+  public void setUid(String uid) {
+    this.uid = uid;
+  }
+
+  public String getImage() {
+    return image;
+  }
+
+  public void setImage(String image) {
+    this.image = image;
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
   }
 }
