@@ -8,10 +8,11 @@
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/drawable/circle_shape.xml" value="0.2335" />
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/drawable/current_chat_user_background.xml" value="0.1095" />
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/drawable/not_current_chat_user_background.xml" value="0.1995" />
+        <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/drawable/send_file.xml" value="0.205" />
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout-v29/activity_login.xml" value="0.371875" />
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout/activity_chat.xml" value="0.1" />
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout/activity_find_friends.xml" value="0.371875" />
-        <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout/activity_group_chat.xml" value="0.1" />
+        <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout/activity_group_chat.xml" value="0.22" />
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout/activity_login.xml" value="0.33" />
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout/activity_main.xml" value="0.19166666666666668" />
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout/activity_phone_login.xml" value="0.33" />
@@ -29,6 +30,7 @@
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout/fragment_requests.xml" value="0.22" />
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout/private_chat_bar.xml" value="0.25" />
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/layout/user_display_layout.xml" value="0.33" />
+        <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/menu/group_option_menu.xml" value="0.33" />
         <entry key="..\:/Programs/Android/AndroidStudioProjects/Sliver/app/src/main/res/menu/options_menu.xml" value="0.33" />
         <entry key="..\:/Programs/Android/sdk/platforms/android-32/data/res/layout/simple_list_item_1.xml" value="0.371875" />
       </map>

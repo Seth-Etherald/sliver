@@ -1,5 +1,6 @@
 package com.example.sliver;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -99,6 +100,13 @@ public class ContactsFragment extends Fragment {
                           holder.username.setText(username);
                           holder.userStatus.setText(userStatus);
                         }
+                        holder.itemView.setOnClickListener(
+                            view -> {
+                              Intent profileIntent =
+                                  new Intent(getContext(), ProfileActivity.class);
+                              profileIntent.putExtra("visit_user_id", userIds);
+                              startActivity(profileIntent);
+                            });
                       }
 
                       @Override

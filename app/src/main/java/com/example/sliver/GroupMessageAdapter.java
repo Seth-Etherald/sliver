@@ -1,8 +1,11 @@
 package com.example.sliver;
 
+import static com.bumptech.glide.request.target.Target.SIZE_ORIGINAL;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -26,6 +29,7 @@ public class GroupMessageAdapter
   private List<ChatModel> messagesList;
   private FirebaseAuth myAuth;
   private CircleImageView profileImage;
+  private ImageView imageViewNotCurrentUser, imageViewCurrentUser;
 
   public GroupMessageAdapter(List<ChatModel> messagesList) {
     this.messagesList = messagesList;
@@ -68,7 +72,6 @@ public class GroupMessageAdapter
                   .into(profileImage);
             }
           }
-
           @Override
           public void onCancelled(@NonNull DatabaseError error) {}
         });
@@ -79,6 +82,7 @@ public class GroupMessageAdapter
         holder.currentUserSide.setVisibility(View.VISIBLE);
         holder.senderMessageText.setText(messages.getMessage());
       } else {
+        profileImage.setVisibility(View.VISIBLE);
         holder.currentUserSide.setVisibility(View.GONE);
         holder.notCurrentUserSide.setVisibility(View.VISIBLE);
         holder.receiverUsername.setText(messages.getName());
@@ -89,6 +93,38 @@ public class GroupMessageAdapter
             .placeholder(R.drawable.default_avatar)
             .dontAnimate()
             .into(profileImage);
+      }
+    } else {
+      holder.receiverMessageText.setVisibility(View.GONE);
+      holder.senderMessageText.setVisibility(View.GONE);
+      if (fromUserId.equals(messageSenderId)) {
+        profileImage.setVisibility(View.GONE);
+        imageViewNotCurrentUser.setVisibility(View.GONE);
+        holder.notCurrentUserSide.setVisibility(View.GONE);
+        holder.messageTime.setVisibility(View.GONE);
+        holder.currentUserSide.setVisibility(View.VISIBLE);
+        imageViewCurrentUser.setVisibility(View.VISIBLE);
+        Glide.with(imageViewCurrentUser.getContext())
+            .load(messages.getMessage())
+            .override(SIZE_ORIGINAL)
+            .into(imageViewCurrentUser);
+      } else {
+        profileImage.setVisibility(View.VISIBLE);
+        imageViewCurrentUser.setVisibility(View.GONE);
+        holder.currentUserSide.setVisibility(View.GONE);
+        holder.notCurrentUserSide.setVisibility(View.VISIBLE);
+        imageViewNotCurrentUser.setVisibility(View.VISIBLE);
+        holder.receiverUsername.setText(messages.getName());
+        Glide.with(profileImage.getContext())
+                .load(messages.getImage())
+                .placeholder(R.drawable.default_avatar)
+                .dontAnimate()
+                .into(profileImage);
+        Glide.with(imageViewNotCurrentUser.getContext())
+            .load(messages.getMessage())
+            .override(SIZE_ORIGINAL)
+            .into(imageViewNotCurrentUser);
+        holder.messageTime.setText(messages.getTime());
       }
     }
   }
@@ -111,6 +147,8 @@ public class GroupMessageAdapter
       receiverMessageText = itemView.findViewById(R.id.message_text);
       messageTime = itemView.findViewById(R.id.message_time);
       senderMessageText = itemView.findViewById(R.id.sender_message_content);
+      imageViewNotCurrentUser = itemView.findViewById(R.id.not_current_user_image_view);
+      imageViewCurrentUser = itemView.findViewById(R.id.current_user_image_view);
     }
   }
 }

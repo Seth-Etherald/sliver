@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
       sendUserToLoginActivity();
     } else {
       currentUserID = myAuth.getCurrentUser().getUid();
-      VerifyUserExistence();
+      verifyUserExistence();
       updateUserState("online");
     }
   }
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
-  private void VerifyUserExistence() {
+  private void verifyUserExistence() {
     rootRef
         .child("users")
         .child(currentUserID)
@@ -184,6 +184,12 @@ public class MainActivity extends AppCompatActivity {
         .addOnCompleteListener(
             task -> {
               if (task.isSuccessful()) {
+//                rootRef.child("groups").child(groupName).child("messages").setValue("");
+//                rootRef
+//                    .child("groups")
+//                    .child(groupName)
+//                    .child("group_owner_id")
+//                    .setValue(currentUserID);
                 Toast.makeText(
                         MainActivity.this,
                         groupName + " group is created successfully!",

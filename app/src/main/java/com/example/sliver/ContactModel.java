@@ -22,4 +22,16 @@ public class ContactModel {
   public String getImage() {
     return image;
   }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
+  public void setImage(String image) {
+    this.image = image;
+  }
 }

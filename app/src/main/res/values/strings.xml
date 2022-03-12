@@ -43,4 +43,7 @@
     <string name="last_seen_status">Last seen: \n%1$s</string>
     <string name="placeholder_status">Offline</string>
     <string name="state_online">Online</string>
+    <string name="send_file">Send File</string>
+    <string name="placeholder_image">placeholder image</string>
+    <string name="delete_group">Delete this group</string>
 </resources>

@@ -1,10 +1,13 @@
 package com.example.sliver;
 
+import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -22,6 +26,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,14 +46,12 @@ public class PrivateChatActivity extends AppCompatActivity {
       messageReceiverName,
       messageReceiverProfileImage,
       messageSenderId;
-  private TextView privateChatUsername, privateChatUserStatus;
-  private CircleImageView privateChatProfileImage;
-  private ImageButton privateChatButton;
+  private String fileType = "", myUrl = "";
+  private TextView privateChatUserStatus;
+  private ImageButton privateChatButton, sendImageButton;
   private TextInputLayout privateChatInput;
-  private FirebaseAuth myAuth;
   private DatabaseReference rootRef;
   private List<ChatModel> messageList = new ArrayList<>();
-  private LinearLayoutManager linearLayoutManager;
   private PrivateMessageAdapter messageAdapter;
   private RecyclerView privateChatView;
 
@@ -55,7 +60,7 @@ public class PrivateChatActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_private_chat);
 
-    myAuth = FirebaseAuth.getInstance();
+    FirebaseAuth myAuth = FirebaseAuth.getInstance();
     messageSenderId = myAuth.getCurrentUser().getUid();
     rootRef =
         FirebaseDatabase.getInstance(
@@ -68,39 +73,6 @@ public class PrivateChatActivity extends AppCompatActivity {
         getIntent().getExtras().get("visit_user_profile_image").toString();
 
     initializeFields();
-    privateChatButton.setOnClickListener(view -> sendMessage());
-  }
-
-  private void initializeFields() {
-    Toolbar myToolbar = findViewById(R.id.private_chat_toolbar);
-    privateChatProfileImage = findViewById(R.id.private_chat_profile_image);
-    privateChatUsername = findViewById(R.id.private_chat_username);
-    privateChatUserStatus = findViewById(R.id.private_chat_last_seen);
-    privateChatButton = findViewById(R.id.private_chat_send_message_button);
-    privateChatInput = findViewById(R.id.input_private_message);
-    privateChatView = findViewById(R.id.private_message_list);
-    setSupportActionBar(myToolbar);
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    getSupportActionBar().setDisplayShowHomeEnabled(true);
-    getSupportActionBar().setTitle(null);
-    myToolbar.setNavigationOnClickListener(view -> finish());
-    privateChatUsername.setText(messageReceiverName);
-    Glide.with(PrivateChatActivity.this)
-        .load(messageReceiverProfileImage)
-        .placeholder(R.drawable.default_avatar)
-        .dontAnimate()
-        .into(privateChatProfileImage);
-
-    messageAdapter = new PrivateMessageAdapter(messageList);
-    linearLayoutManager = new LinearLayoutManager(this);
-    privateChatView.setLayoutManager(linearLayoutManager);
-    privateChatView.setAdapter(messageAdapter);
-  }
-
-  @Override
-  protected void onStart() {
-    super.onStart();
-    checkUserState();
     rootRef
         .child("messages")
         .child(messageSenderId)
@@ -130,6 +102,48 @@ public class PrivateChatActivity extends AppCompatActivity {
               @Override
               public void onCancelled(@NonNull DatabaseError error) {}
             });
+    privateChatButton.setOnClickListener(view -> sendMessage());
+    sendImageButton.setOnClickListener(
+        view -> {
+          fileType = "image";
+          Intent intentImage = new Intent();
+          intentImage.setAction(Intent.ACTION_GET_CONTENT);
+          intentImage.setType("image/*");
+          startActivityForResult(intentImage, 1);
+        });
+  }
+
+  private void initializeFields() {
+    Toolbar myToolbar = findViewById(R.id.private_chat_toolbar);
+    CircleImageView privateChatProfileImage = findViewById(R.id.private_chat_profile_image);
+    TextView privateChatUsername = findViewById(R.id.private_chat_username);
+    privateChatUserStatus = findViewById(R.id.private_chat_last_seen);
+    privateChatButton = findViewById(R.id.private_chat_send_message_button);
+    sendImageButton = findViewById(R.id.private_chat_send_file_button);
+    privateChatInput = findViewById(R.id.input_private_message);
+    privateChatView = findViewById(R.id.private_message_list);
+    setSupportActionBar(myToolbar);
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    getSupportActionBar().setDisplayShowHomeEnabled(true);
+    getSupportActionBar().setTitle(null);
+    myToolbar.setNavigationOnClickListener(view -> finish());
+    privateChatUsername.setText(messageReceiverName);
+    Glide.with(PrivateChatActivity.this)
+        .load(messageReceiverProfileImage)
+        .placeholder(R.drawable.default_avatar)
+        .dontAnimate()
+        .into(privateChatProfileImage);
+
+    messageAdapter = new PrivateMessageAdapter(messageList);
+    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+    privateChatView.setLayoutManager(linearLayoutManager);
+    privateChatView.setAdapter(messageAdapter);
+  }
+
+  @Override
+  protected void onStart() {
+    super.onStart();
+    checkUserState();
   }
 
   @Override
@@ -142,6 +156,54 @@ public class PrivateChatActivity extends AppCompatActivity {
   protected void onDestroy() {
     super.onDestroy();
     messageList.clear();
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    Uri fileUri = data.getData();
+    if (fileType.equals("image")) {
+      StorageReference storageReference =
+          FirebaseStorage.getInstance().getReference().child("Message Images");
+      Calendar messageTime = Calendar.getInstance();
+      SimpleDateFormat currentTimeFormat =
+          new SimpleDateFormat("MMM dd, yyyy (hh:mm a)", Locale.UK);
+      String currentTime = currentTimeFormat.format(messageTime.getTime());
+      String messageSenderRef = "messages/" + messageSenderId + "/" + messageReceiverId;
+      String messageReceiverRef = "messages/" + messageReceiverId + "/" + messageSenderId;
+      DatabaseReference userMessageKeyRef =
+          rootRef.child("messages").child(messageSenderId).child(messageReceiverId).push();
+      String messageId = userMessageKeyRef.getKey();
+      StorageReference filePath = storageReference.child(messageId + ".jpg");
+      StorageTask uploadTask = filePath.putFile(fileUri);
+      uploadTask
+          .continueWithTask(
+              task -> {
+                if (!task.isSuccessful()) {
+                  throw task.getException();
+                }
+                return filePath.getDownloadUrl();
+              })
+          .addOnCompleteListener(
+              (OnCompleteListener<Uri>)
+                  task -> {
+                    if (task.isSuccessful()) {
+                      Uri downloadUrl = task.getResult();
+                      myUrl = downloadUrl.toString();
+                      Map<String, String> messageTextBody = new HashMap<>();
+                      messageTextBody.put("message", myUrl);
+                      messageTextBody.put("type", fileType);
+                      messageTextBody.put("uid", messageSenderId);
+                      messageTextBody.put("time", currentTime);
+                      Map<String, Object> messageBodyDetails = new HashMap<>();
+                      messageBodyDetails.put(messageSenderRef + "/" + messageId, messageTextBody);
+                      messageBodyDetails.put(messageReceiverRef + "/" + messageId, messageTextBody);
+                      rootRef.updateChildren(messageBodyDetails);
+                    }
+                  });
+    } else {
+      Toast.makeText(this, "Nothing selected", Toast.LENGTH_SHORT).show();
+    }
   }
 
   private void sendMessage() {
@@ -167,6 +229,8 @@ public class PrivateChatActivity extends AppCompatActivity {
       rootRef
           .updateChildren(messageBodyDetails)
           .addOnCompleteListener(task -> privateChatInput.getEditText().setText(""));
+    } else {
+      privateChatInput.getEditText().setText("");
     }
   }
 

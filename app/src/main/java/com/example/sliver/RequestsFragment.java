@@ -61,14 +61,16 @@ public class RequestsFragment extends Fragment {
 
     myRequestsList = requestFragmentView.findViewById(R.id.chat_requests_list);
     myRequestsList.setLayoutManager(new LinearLayoutManager(getContext()));
-
+    startAdapter();
     return requestFragmentView;
   }
 
   @Override
   public void onStart() {
     super.onStart();
+  }
 
+  private void startAdapter() {
     FirebaseRecyclerOptions<ContactModel> options =
         new FirebaseRecyclerOptions.Builder<ContactModel>()
             .setQuery(chatRequestRef.child(currentUserId), ContactModel.class)
@@ -141,13 +143,22 @@ public class RequestsFragment extends Fragment {
                                                         chatRequestRef
                                                             .child(currentUserId)
                                                             .child(list_user_id)
-                                                            .removeValue();
+                                                            .removeValue()
+                                                            .addOnCompleteListener(
+                                                                task2 -> {
+                                                                  if (task2.isSuccessful()) {
+                                                                    chatRequestRef
+                                                                        .child(list_user_id)
+                                                                        .child(currentUserId)
+                                                                        .removeValue();
+                                                                    Toast.makeText(
+                                                                            getContext(),
+                                                                            "New contact added!",
+                                                                            Toast.LENGTH_SHORT)
+                                                                        .show();
+                                                                  }
+                                                                });
                                                       }
-                                                      Toast.makeText(
-                                                              getContext(),
-                                                              "New contact added!",
-                                                              Toast.LENGTH_SHORT)
-                                                          .show();
                                                     });
                                           }
                                         }));

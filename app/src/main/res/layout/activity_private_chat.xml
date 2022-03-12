@@ -26,12 +26,22 @@
         android:layout_marginBottom="5dp"
         android:orientation="horizontal">
 
+        <ImageButton
+            android:id="@+id/private_chat_send_file_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginEnd="5dp"
+            android:layout_weight="1"
+            android:background="@drawable/circle_shape"
+            android:contentDescription="@string/send_file"
+            android:src="@drawable/send_file_24dp" />
+
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/input_private_message"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
             android:layout_weight="4"
             android:hint="@string/chat_hint">
 
