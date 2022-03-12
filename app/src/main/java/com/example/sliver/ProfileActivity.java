@@ -153,17 +153,17 @@ public class ProfileActivity extends AppCompatActivity {
                                 .push()
                                 .setValue(chatNotificationMap)
                                 .addOnCompleteListener(
-                                        task2 -> {
-                                          sendMessageRequestButton.setEnabled(true);
-                                          REQUEST_STATE_FLAG = "request_sent";
-                                          Toast.makeText(
-                                                  ProfileActivity.this,
-                                                  "Friend request sent!",
-                                                  Toast.LENGTH_SHORT)
-                                              .show();
-                                          sendMessageRequestButton.setText(
-                                              R.string.cancel_message_request);
-                                        });
+                                    task2 -> {
+                                      sendMessageRequestButton.setEnabled(true);
+                                      REQUEST_STATE_FLAG = "request_sent";
+                                      Toast.makeText(
+                                              ProfileActivity.this,
+                                              "Friend request sent!",
+                                              Toast.LENGTH_SHORT)
+                                          .show();
+                                      sendMessageRequestButton.setText(
+                                          R.string.cancel_message_request);
+                                    });
                           }
                         });
               }

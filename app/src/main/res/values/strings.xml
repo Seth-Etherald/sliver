@@ -46,4 +46,6 @@
     <string name="send_file">Send File</string>
     <string name="placeholder_image">placeholder image</string>
     <string name="delete_group">Delete this group</string>
+    <string name="reset_password">Reset password</string>
+    <string name="return_to_login">Return to <u><b>Login</b></u></string>
 </resources>

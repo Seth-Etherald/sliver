@@ -88,6 +88,7 @@ public class RegisterActivity extends AppCompatActivity {
   private void sendUserToLoginActivity() {
     Intent loginIntent = new Intent(RegisterActivity.this, LoginActivity.class);
     startActivity(loginIntent);
+    finish();
   }
 
   private void initializeFields() {

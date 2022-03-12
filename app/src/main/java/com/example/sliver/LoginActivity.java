@@ -41,6 +41,12 @@ public class LoginActivity extends AppCompatActivity {
     registerScreenButton.setOnClickListener(view -> sendUserToRegisterActivity());
     loginButton.setOnClickListener(view -> login());
     phoneLoginButton.setOnClickListener(view -> sendUserToPhoneLoginActivity());
+    forgotPasswordButton.setOnClickListener(
+        view -> {
+          Intent forgotPasswordIntent =
+              new Intent(LoginActivity.this, ForgotPasswordAcvitity.class);
+          startActivity(forgotPasswordIntent);
+        });
   }
 
   private void login() {
