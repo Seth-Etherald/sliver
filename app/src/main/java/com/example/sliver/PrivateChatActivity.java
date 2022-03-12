@@ -73,35 +73,7 @@ public class PrivateChatActivity extends AppCompatActivity {
         getIntent().getExtras().get("visit_user_profile_image").toString();
 
     initializeFields();
-    rootRef
-        .child("messages")
-        .child(messageSenderId)
-        .child(messageReceiverId)
-        .addChildEventListener(
-            new ChildEventListener() {
-              @Override
-              public void onChildAdded(
-                  @NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                ChatModel messages = snapshot.getValue(ChatModel.class);
-                messageList.add(messages);
-                messageAdapter.notifyDataSetChanged();
-                privateChatView.smoothScrollToPosition(privateChatView.getAdapter().getItemCount());
-              }
-
-              @Override
-              public void onChildChanged(
-                  @NonNull DataSnapshot snapshot, @Nullable String previousChildName) {}
-
-              @Override
-              public void onChildRemoved(@NonNull DataSnapshot snapshot) {}
-
-              @Override
-              public void onChildMoved(
-                  @NonNull DataSnapshot snapshot, @Nullable String previousChildName) {}
-
-              @Override
-              public void onCancelled(@NonNull DatabaseError error) {}
-            });
+    adapterListener();
     privateChatButton.setOnClickListener(view -> sendMessage());
     sendImageButton.setOnClickListener(
         view -> {
@@ -140,22 +112,42 @@ public class PrivateChatActivity extends AppCompatActivity {
     privateChatView.setAdapter(messageAdapter);
   }
 
+  private void adapterListener() {
+    rootRef
+        .child("messages")
+        .child(messageSenderId)
+        .child(messageReceiverId)
+        .addChildEventListener(
+            new ChildEventListener() {
+              @Override
+              public void onChildAdded(
+                  @NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                ChatModel messages = snapshot.getValue(ChatModel.class);
+                messageList.add(messages);
+                messageAdapter.notifyDataSetChanged();
+                privateChatView.smoothScrollToPosition(privateChatView.getAdapter().getItemCount());
+              }
+
+              @Override
+              public void onChildChanged(
+                  @NonNull DataSnapshot snapshot, @Nullable String previousChildName) {}
+
+              @Override
+              public void onChildRemoved(@NonNull DataSnapshot snapshot) {}
+
+              @Override
+              public void onChildMoved(
+                  @NonNull DataSnapshot snapshot, @Nullable String previousChildName) {}
+
+              @Override
+              public void onCancelled(@NonNull DatabaseError error) {}
+            });
+  }
+
   @Override
   protected void onStart() {
     super.onStart();
     checkUserState();
-  }
-
-  @Override
-  protected void onPause() {
-    super.onPause();
-    messageList.clear();
-  }
-
-  @Override
-  protected void onDestroy() {
-    super.onDestroy();
-    messageList.clear();
   }
 
   @Override

@@ -14,11 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
@@ -53,28 +48,6 @@ public class GroupMessageAdapter
     String fromUserId = messages.getUid();
     String fromMessageType = messages.getType();
 
-    DatabaseReference usersRef =
-        FirebaseDatabase.getInstance(
-                "https://sliver-b6693-default-rtdb.asia-southeast1.firebasedatabase.app/")
-            .getReference()
-            .child("users")
-            .child(fromUserId);
-    usersRef.addValueEventListener(
-        new ValueEventListener() {
-          @Override
-          public void onDataChange(@NonNull DataSnapshot snapshot) {
-            if (snapshot.hasChild("image")) {
-              String profileImageLink = snapshot.child("image").getValue().toString();
-              Glide.with(profileImage.getContext())
-                  .load(profileImageLink)
-                  .placeholder(R.drawable.default_avatar)
-                  .dontAnimate()
-                  .into(profileImage);
-            }
-          }
-          @Override
-          public void onCancelled(@NonNull DatabaseError error) {}
-        });
     if (fromMessageType.equals("text")) {
       if (fromUserId.equals(messageSenderId)) {
         profileImage.setVisibility(View.GONE);
@@ -116,10 +89,10 @@ public class GroupMessageAdapter
         imageViewNotCurrentUser.setVisibility(View.VISIBLE);
         holder.receiverUsername.setText(messages.getName());
         Glide.with(profileImage.getContext())
-                .load(messages.getImage())
-                .placeholder(R.drawable.default_avatar)
-                .dontAnimate()
-                .into(profileImage);
+            .load(messages.getImage())
+            .placeholder(R.drawable.default_avatar)
+            .dontAnimate()
+            .into(profileImage);
         Glide.with(imageViewNotCurrentUser.getContext())
             .load(messages.getMessage())
             .override(SIZE_ORIGINAL)
