@@ -97,12 +97,25 @@ public class ChatsFragment extends Fragment {
                           } else {
                             profileImage = "";
                           }
+                          if (snapshot.hasChild("user_state")) {
+                            String state =
+                                snapshot.child("user_state").child("state").getValue().toString();
+                            if (state.equals("online")) {
+                              holder.onlineIndicator.setVisibility(View.VISIBLE);
+                              holder.userStatus.setText(R.string.state_online);
+                            } else {
+                              String time =
+                                  snapshot.child("user_state").child("time").getValue().toString();
+                              String lastSeenStatus =
+                                  res.getString(R.string.last_seen_status, time);
+                              holder.onlineIndicator.setVisibility(View.GONE);
+                              holder.userStatus.setText(lastSeenStatus);
+                            }
+                          } else {
+                            holder.userStatus.setText(R.string.placeholder_status);
+                          }
                           String username = snapshot.child("name").getValue().toString();
-                          String userStatus = snapshot.child("status").getValue().toString();
-                          String lastSeenStatus =
-                              res.getString(R.string.last_seen_status, "Date Time");
                           holder.username.setText(username);
-                          holder.userStatus.setText(lastSeenStatus);
                           holder.itemView.setOnClickListener(
                               view -> {
                                 Intent privateChatIntent =
@@ -136,13 +149,14 @@ public class ChatsFragment extends Fragment {
 
   public static class ChatsViewHolder extends RecyclerView.ViewHolder {
     TextView username, userStatus;
-    CircleImageView profileImage;
+    CircleImageView profileImage, onlineIndicator;
 
     public ChatsViewHolder(@NonNull View itemView) {
       super(itemView);
       username = itemView.findViewById(R.id.user_profile_name);
       userStatus = itemView.findViewById(R.id.user_profile_status);
       profileImage = itemView.findViewById(R.id.user_profile_image);
+      onlineIndicator = itemView.findViewById(R.id.user_online_status);
     }
   }
 }

@@ -76,6 +76,7 @@ public class GroupChatActivity extends AppCompatActivity {
             ChatModel messages = snapshot.getValue(ChatModel.class);
             messageList.add(messages);
             messageAdapter.notifyDataSetChanged();
+            myRecyclerView.smoothScrollToPosition(myRecyclerView.getAdapter().getItemCount());
           }
 
           @Override

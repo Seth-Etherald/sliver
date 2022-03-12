@@ -41,4 +41,6 @@
     <string name="request_user_status">%1$s sent you a friend request!</string>
     <string name="request_user_send_status">You sent a friend request to %1$s!</string>
     <string name="last_seen_status">Last seen: \n%1$s</string>
+    <string name="placeholder_status">Offline</string>
+    <string name="state_online">Online</string>
 </resources>

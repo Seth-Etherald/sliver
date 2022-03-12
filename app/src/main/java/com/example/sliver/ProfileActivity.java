@@ -17,6 +17,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -26,7 +28,7 @@ public class ProfileActivity extends AppCompatActivity {
   private CircleImageView userProfileImage;
   private TextView userProfileName, userProfileStatus;
   private Button sendMessageRequestButton, declineMessageRequestButton;
-  private DatabaseReference userRef, chatRequestRef, contactsRef;
+  private DatabaseReference userRef, chatRequestRef, contactsRef, notificationRef;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +50,12 @@ public class ProfileActivity extends AppCompatActivity {
                 "https://sliver-b6693-default-rtdb.asia-southeast1.firebasedatabase.app/")
             .getReference()
             .child("contacts");
+    notificationRef =
+        FirebaseDatabase.getInstance(
+                "https://sliver-b6693-default-rtdb.asia-southeast1.firebasedatabase.app/")
+            .getReference()
+            .child("notifications");
+
     FirebaseAuth myAuth = FirebaseAuth.getInstance();
     currentUserID = myAuth.getCurrentUser().getUid();
     receiverUserId = getIntent().getExtras().get("visit_user_id").toString();
@@ -137,10 +145,25 @@ public class ProfileActivity extends AppCompatActivity {
                     .addOnCompleteListener(
                         task1 -> {
                           if (task1.isSuccessful()) {
-                            sendMessageRequestButton.setEnabled(true);
-                            REQUEST_STATE_FLAG = "request_sent";
-                            Toast.makeText(this, "Friend request sent!", Toast.LENGTH_SHORT).show();
-                            sendMessageRequestButton.setText(R.string.cancel_message_request);
+                            HashMap<String, String> chatNotificationMap = new HashMap<>();
+                            chatNotificationMap.put("from", currentUserID);
+                            chatNotificationMap.put("type", "request");
+                            notificationRef
+                                .child(receiverUserId)
+                                .push()
+                                .setValue(chatNotificationMap)
+                                .addOnCompleteListener(
+                                        task2 -> {
+                                          sendMessageRequestButton.setEnabled(true);
+                                          REQUEST_STATE_FLAG = "request_sent";
+                                          Toast.makeText(
+                                                  ProfileActivity.this,
+                                                  "Friend request sent!",
+                                                  Toast.LENGTH_SHORT)
+                                              .show();
+                                          sendMessageRequestButton.setText(
+                                              R.string.cancel_message_request);
+                                        });
                           }
                         });
               }

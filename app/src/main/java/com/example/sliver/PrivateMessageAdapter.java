@@ -45,9 +45,11 @@ public class PrivateMessageAdapter
     if (fromMessageType.equals("text")) {
       if (fromUserId.equals(messageSenderId)) {
         holder.notCurrentUserSide.setVisibility(View.GONE);
+        holder.currentUserSide.setVisibility(View.VISIBLE);
         holder.senderMessageText.setText(messages.getMessage());
       } else {
         holder.currentUserSide.setVisibility(View.GONE);
+        holder.notCurrentUserSide.setVisibility(View.VISIBLE);
         holder.receiverMessageText.setText(messages.getMessage());
         holder.messageTime.setText(messages.getTime());
       }

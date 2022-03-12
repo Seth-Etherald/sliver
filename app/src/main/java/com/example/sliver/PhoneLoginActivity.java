@@ -17,6 +17,9 @@ import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.auth.PhoneAuthProvider.OnVerificationStateChangedCallbacks;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.concurrent.TimeUnit;
 
@@ -27,6 +30,7 @@ public class PhoneLoginActivity extends AppCompatActivity {
   private OnVerificationStateChangedCallbacks callbacks;
   private String mVerificationId;
   private PhoneAuthProvider.ForceResendingToken mResendToken;
+  private DatabaseReference usersRef;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +38,12 @@ public class PhoneLoginActivity extends AppCompatActivity {
     setContentView(R.layout.activity_phone_login);
 
     myAuth = FirebaseAuth.getInstance();
+
+    usersRef =
+        FirebaseDatabase.getInstance(
+                "https://sliver-b6693-default-rtdb.asia-southeast1.firebasedatabase.app/")
+            .getReference()
+            .child("users");
 
     initializeFields();
 
@@ -132,7 +142,25 @@ public class PhoneLoginActivity extends AppCompatActivity {
             this,
             task -> {
               if (task.isSuccessful()) {
-                sendUserToMainActivity();
+                String currentUserId = myAuth.getCurrentUser().getUid();
+                FirebaseMessaging.getInstance()
+                    .getToken()
+                    .addOnSuccessListener(
+                        s -> {
+                          if (s != null) {
+                            usersRef
+                                .child(currentUserId)
+                                .child("device_token")
+                                .setValue(s)
+                                .addOnCompleteListener(
+                                    task1 -> {
+                                      if (task1.isSuccessful()) {
+                                        sendUserToMainActivity();
+                                        Toast.makeText(this, "Welcome!", Toast.LENGTH_SHORT).show();
+                                      }
+                                    });
+                          }
+                        });
               } else {
                 String message = task.getException().toString();
                 Toast.makeText(PhoneLoginActivity.this, message, Toast.LENGTH_SHORT).show();

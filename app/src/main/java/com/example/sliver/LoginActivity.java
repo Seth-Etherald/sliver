@@ -11,6 +11,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 @SuppressWarnings("deprecation")
 public class LoginActivity extends AppCompatActivity {
@@ -19,6 +22,7 @@ public class LoginActivity extends AppCompatActivity {
   private Button loginButton, registerScreenButton, phoneLoginButton, forgotPasswordButton;
   private TextInputLayout userEmail, userPassword;
   private ProgressDialog progressDialog;
+  private DatabaseReference usersRef;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +30,11 @@ public class LoginActivity extends AppCompatActivity {
     setContentView(R.layout.activity_login);
 
     myAuth = FirebaseAuth.getInstance();
+    usersRef =
+        FirebaseDatabase.getInstance(
+                "https://sliver-b6693-default-rtdb.asia-southeast1.firebasedatabase.app/")
+            .getReference()
+            .child("users");
 
     initializeFields();
 
@@ -56,8 +65,29 @@ public class LoginActivity extends AppCompatActivity {
           .addOnCompleteListener(
               task -> {
                 if (task.isSuccessful()) {
-                  sendUserToMainActivity();
-                  Toast.makeText(LoginActivity.this, "Welcome!", Toast.LENGTH_SHORT).show();
+                  String currentUserId = myAuth.getCurrentUser().getUid();
+                  FirebaseMessaging.getInstance()
+                      .getToken()
+                      .addOnSuccessListener(
+                          s -> {
+                            if (s != null) {
+                              usersRef
+                                  .child(currentUserId)
+                                  .child("device_token")
+                                  .setValue(s)
+                                  .addOnCompleteListener(
+                                      task1 -> {
+                                        if (task1.isSuccessful()) {
+                                          sendUserToMainActivity();
+                                          Toast.makeText(
+                                                  LoginActivity.this,
+                                                  "Welcome!",
+                                                  Toast.LENGTH_SHORT)
+                                              .show();
+                                        }
+                                      });
+                            }
+                          });
                 } else {
                   String errorMessage = task.getException().getMessage();
                   Toast.makeText(LoginActivity.this, errorMessage, Toast.LENGTH_SHORT).show();

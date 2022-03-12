@@ -23,11 +23,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity {
 
   private FirebaseUser currentUser;
   private FirebaseAuth myAuth;
   private DatabaseReference rootRef;
+  private String currentUserID;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -56,16 +62,24 @@ public class MainActivity extends AppCompatActivity {
   @Override
   protected void onStart() {
     super.onStart();
-
     if (currentUser == null) {
       sendUserToLoginActivity();
     } else {
+      currentUserID = myAuth.getCurrentUser().getUid();
       VerifyUserExistence();
+      updateUserState("online");
+    }
+  }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    if (currentUser != null) {
+      updateUserState("offline");
     }
   }
 
   private void VerifyUserExistence() {
-    String currentUserID = myAuth.getCurrentUser().getUid();
     rootRef
         .child("users")
         .child(currentUserID)
@@ -129,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
 
     if (item.getItemId() == R.id.main_logout_option) {
       myAuth.signOut();
+      updateUserState("offline");
       sendUserToLoginActivity();
     }
     return true;
@@ -179,5 +194,16 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
               }
             });
+  }
+
+  private void updateUserState(String state) {
+    Calendar messageTime = Calendar.getInstance();
+    SimpleDateFormat currentTimeFormat = new SimpleDateFormat("MMM dd, yyyy (hh:mm a)", Locale.UK);
+    String currentTime = currentTimeFormat.format(messageTime.getTime());
+    HashMap<String, Object> onlineState = new HashMap<>();
+    onlineState.put("time", currentTime);
+    onlineState.put("state", state);
+
+    rootRef.child("users").child(currentUserID).child("user_state").updateChildren(onlineState);
   }
 }

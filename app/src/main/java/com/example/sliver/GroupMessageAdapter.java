@@ -76,10 +76,12 @@ public class GroupMessageAdapter
       if (fromUserId.equals(messageSenderId)) {
         profileImage.setVisibility(View.GONE);
         holder.notCurrentUserSide.setVisibility(View.GONE);
+        holder.currentUserSide.setVisibility(View.VISIBLE);
         holder.senderMessageText.setText(messages.getMessage());
       } else {
-        holder.receiverUsername.setText(messages.getName());
         holder.currentUserSide.setVisibility(View.GONE);
+        holder.notCurrentUserSide.setVisibility(View.VISIBLE);
+        holder.receiverUsername.setText(messages.getName());
         holder.receiverMessageText.setText(messages.getMessage());
         holder.messageTime.setText(messages.getTime());
         Glide.with(profileImage.getContext())

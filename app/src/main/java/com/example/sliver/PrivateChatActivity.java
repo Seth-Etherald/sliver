@@ -1,5 +1,6 @@
 package com.example.sliver;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.ImageButton;
@@ -20,6 +21,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -98,6 +100,7 @@ public class PrivateChatActivity extends AppCompatActivity {
   @Override
   protected void onStart() {
     super.onStart();
+    checkUserState();
     rootRef
         .child("messages")
         .child(messageSenderId)
@@ -110,6 +113,7 @@ public class PrivateChatActivity extends AppCompatActivity {
                 ChatModel messages = snapshot.getValue(ChatModel.class);
                 messageList.add(messages);
                 messageAdapter.notifyDataSetChanged();
+                privateChatView.smoothScrollToPosition(privateChatView.getAdapter().getItemCount());
               }
 
               @Override
@@ -164,5 +168,30 @@ public class PrivateChatActivity extends AppCompatActivity {
           .updateChildren(messageBodyDetails)
           .addOnCompleteListener(task -> privateChatInput.getEditText().setText(""));
     }
+  }
+
+  private void checkUserState() {
+    Resources res = getResources();
+    rootRef
+        .child("users")
+        .child(messageReceiverId)
+        .child("user_state")
+        .addValueEventListener(
+            new ValueEventListener() {
+              @Override
+              public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String userState = snapshot.child("state").getValue().toString();
+                if (userState.equals("online")) {
+                  privateChatUserStatus.setText(R.string.state_online);
+                } else {
+                  String time = snapshot.child("time").getValue().toString();
+                  String lastSeenStatus = res.getString(R.string.last_seen_status, time);
+                  privateChatUserStatus.setText(lastSeenStatus);
+                }
+              }
+
+              @Override
+              public void onCancelled(@NonNull DatabaseError error) {}
+            });
   }
 }

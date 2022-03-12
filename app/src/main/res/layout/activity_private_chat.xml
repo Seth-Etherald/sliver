@@ -13,6 +13,7 @@
         android:id="@+id/private_message_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@id/my_linear_layout_private_chat"
         android:layout_below="@id/private_chat_toolbar" />
 
     <LinearLayout

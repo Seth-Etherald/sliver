@@ -46,7 +46,7 @@
                 android:layout_gravity="center_vertical"
                 android:contentDescription="@string/user_online_indicator"
                 android:src="@android:color/holo_green_dark"
-                android:visibility="invisible" />
+                android:visibility="gone" />
         </LinearLayout>
 
         <TextView
