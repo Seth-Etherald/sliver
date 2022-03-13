@@ -3,7 +3,6 @@
     <string name="logo_description">Sliver Logo</string>
     <string name="email_input">Email</string>
     <string name="confirm_email">Re-enter your Email</string>
-    <string name="email_blank">Please enter an Email</string>
     <string name="confirm_password">Re-enter your Password</string>
     <string name="password_input">Password</string>
     <string name="phone_input">Please enter your phone number</string>
@@ -37,7 +36,6 @@
     <string name="remove_contact">Remove this contact</string>
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
-    <string name="request_sent">Request sent</string>
     <string name="request_user_status">%1$s sent you a friend request!</string>
     <string name="request_user_send_status">You sent a friend request to %1$s!</string>
     <string name="last_seen_status">Last seen: \n%1$s</string>
@@ -45,7 +43,6 @@
     <string name="state_online">Online</string>
     <string name="send_file">Send File</string>
     <string name="placeholder_image">placeholder image</string>
-    <string name="delete_group">Delete this group</string>
     <string name="reset_password">Reset password</string>
     <string name="return_to_login">Return to <u><b>Login</b></u></string>
 </resources>
